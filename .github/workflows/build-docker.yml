@@ -1,0 +1,54 @@
+name: Build Docker
+
+env:
+  CLASH_TAG: 2023.08.17
+  DEVICE_PLATFORM: linux-arm64
+  DOWNLOAD_URL: https://github.com/Dreamacro/clash/releases/download/premium/clash-${DEVICE_PLATFORM}-${CLASH_TAG}.gz
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  Docker-Images:
+    name: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Set Up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login To Alibaba Cloud Container Registry
+        run: |
+          docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PWD }}' registry.cn-hangzhou.aliyuncs.com
+
+      - name: Download Clash
+        id: env
+        run: |
+          wget -q ${DOWNLOAD_URL}
+          gzip -d clash-${DEVICE_PLATFORM}-${CLASH_TAG}.gz
+          mv clash-${DEVICE_PLATFORM}-${CLASH_TAG} clash
+          chmod +x clash
+          git clone https://github.com/Dreamacro/clash-dashboard.git && cd clash-dashboard && \
+          git checkout -b gh-pages origin/gh-pages
+
+      - name: Build & Push Normal Image (Default)
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64, linux/arm64
+          file: Dockerfile
+          context: .
+          push: true
+          tags: |
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${DEVICE_PLATFORM}-${CLASH_TAG}
+
