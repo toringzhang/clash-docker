@@ -38,6 +38,7 @@ jobs:
           gzip -d clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }}.gz
           mv clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }} clash
           chmod +x clash
+          wget -q https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb
           git clone https://github.com/Dreamacro/clash-dashboard.git && cd clash-dashboard && \
           git checkout -b gh-pages origin/gh-pages
 
