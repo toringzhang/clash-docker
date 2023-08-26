@@ -30,7 +30,7 @@ jobs:
 
       - name: Login To Alibaba Cloud Container Registry
         run: |
-          docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PWD }}' registry.cn-hangzhou.aliyuncs.com
+          docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PASSWD }}' registry.cn-hangzhou.aliyuncs.com
 
       - name: Download Clash
         id: env
