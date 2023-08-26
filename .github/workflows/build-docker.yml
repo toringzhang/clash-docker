@@ -33,11 +33,10 @@ jobs:
           docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PASSWD }}' registry.cn-hangzhou.aliyuncs.com
 
       - name: Download Clash
-        id: env
         run: |
-          wget -q ${DOWNLOAD_URL}
-          gzip -d clash-${DEVICE_PLATFORM}-${CLASH_TAG}.gz
-          mv clash-${DEVICE_PLATFORM}-${CLASH_TAG} clash
+          wget -q ${{ env.DOWNLOAD_URL }}
+          gzip -d clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }}.gz
+          mv clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }} clash
           chmod +x clash
           git clone https://github.com/Dreamacro/clash-dashboard.git && cd clash-dashboard && \
           git checkout -b gh-pages origin/gh-pages
@@ -50,5 +49,5 @@ jobs:
           context: .
           push: true
           tags: |
-            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${DEVICE_PLATFORM}-${CLASH_TAG}
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }}
 
