@@ -16,7 +16,6 @@ jobs:
     env:
       CLASH_VERSION: ${{ vars.CLASH_VERSION }}
       DEVICE_PLATFORM: ${{ vars.DEVICE_PLATFORM }}
-      DOWNLOAD_URL: https://github.com/MetaCubeX/mihomo/releases/download/${{ vars.CLASH_VERSION }}/mihomo-${{ vars.DEVICE_PLATFORM }}-${{ vars.CLASH_VERSION }}.gz
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -34,8 +33,10 @@ jobs:
       - name: Build & Push Normal Image (Default)
         uses: docker/build-push-action@v2
         with:
-          platforms: linux/amd64, linux/arm64
-          build-args: CLASH_VERSION=${{ env.CLASH_VERSION }}, DEVICE_PLATFORM=${{ env.DEVICE_PLATFORM }}
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            CLASH_VERSION=${{ env.CLASH_VERSION }}
+            DEVICE_PLATFORM=${{ env.DEVICE_PLATFORM }}
           file: Dockerfile
           context: .
           push: true
