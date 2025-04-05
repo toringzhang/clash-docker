@@ -8,7 +8,6 @@ RUN apk add --no-cache gzip && \
     wget -O /mihomo-config/geosite.dat https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat && \
     wget -O /mihomo-config/geoip.dat https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
 
-COPY docker/file-name.sh /mihomo/file-name.sh
 WORKDIR /mihomo
 RUN wget -O /mihomo/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/${CLASH_VERSION}/mihomo-${DEVICE_PLATFORM}-${CLASH_VERSION}.gz && \
     gzip -d mihomo.gz && chmod +x mihomo
