@@ -1,9 +1,9 @@
 name: Build Docker
 
 env:
-  CLASH_TAG: 2023.08.17
-  DEVICE_PLATFORM: linux-arm64
-  DOWNLOAD_URL: https://github.com/Dreamacro/clash/releases/download/premium/clash-${DEVICE_PLATFORM}-${CLASH_TAG}.gz
+  CLASH_VERSION: ${{ vars.CLASH_VERSION }}
+  DEVICE_PLATFORM: ${{ vars.DEVICE_PLATFORM }}
+  DOWNLOAD_URL: https://github.com/MetaCubeX/mihomo/releases/download/${CLASH_VERSION}/mihomo-${DEVICE_PLATFORM}-${CLASH_VERSION}.gz
 
 on:
   push:
@@ -32,23 +32,14 @@ jobs:
         run: |
           docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PASSWD }}' registry.cn-hangzhou.aliyuncs.com
 
-      - name: Download Clash
-        run: |
-          wget -q ${{ env.DOWNLOAD_URL }}
-          gzip -d clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }}.gz
-          mv clash-${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }} clash
-          chmod +x clash
-          wget -q https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb
-          git clone https://github.com/Dreamacro/clash-dashboard.git && cd clash-dashboard && \
-          git checkout -b gh-pages origin/gh-pages
-
       - name: Build & Push Normal Image (Default)
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64, linux/arm64
+          build-args: CLASH_VERSION=${{ env.CLASH_VERSION }}, DEVICE_PLATFORM=${{ env.DEVICE_PLATFORM }}
           file: Dockerfile
           context: .
           push: true
           tags: |
-            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_TAG }}
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_VERSION }}
 
