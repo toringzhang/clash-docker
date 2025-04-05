@@ -1,10 +1,5 @@
 name: Build Docker
 
-env:
-  CLASH_VERSION: ${{ vars.CLASH_VERSION }}
-  DEVICE_PLATFORM: ${{ vars.DEVICE_PLATFORM }}
-  DOWNLOAD_URL: https://github.com/MetaCubeX/mihomo/releases/download/${CLASH_VERSION}/mihomo-${DEVICE_PLATFORM}-${CLASH_VERSION}.gz
-
 on:
   push:
     branches:
@@ -17,7 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-
+    environment: build_environment
+    env:
+      CLASH_VERSION: ${{ vars.CLASH_VERSION }}
+      DEVICE_PLATFORM: ${{ vars.DEVICE_PLATFORM }}
+      DOWNLOAD_URL: https://github.com/MetaCubeX/mihomo/releases/download/${{ vars.CLASH_VERSION }}/mihomo-${{ vars.DEVICE_PLATFORM }}-${{ vars.CLASH_VERSION }}.gz
     steps:
       - name: Checkout
         uses: actions/checkout@main
