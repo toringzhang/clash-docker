@@ -16,6 +16,7 @@ RUN wget -O dist.zip https://github.com/Zephyruso/zashboard/releases/latest/down
 FROM alpine:latest
 LABEL org.opencontainers.image.authors="Toring"
 
+ENV SKIP_SAFE_PATH_CHECK=true
 RUN apk add --no-cache curl ca-certificates tzdata iptables
 COPY --from=builder /mihomo-config/ /root/.config/mihomo/
 COPY --from=builder /mihomo/mihomo /usr/bin/mihomo
