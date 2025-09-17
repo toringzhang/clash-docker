@@ -28,17 +28,17 @@ jobs:
         uses: actions/checkout@main
 
       - name: Set Up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
 
       - name: Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Login To Alibaba Cloud Container Registry
         run: |
           docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PASSWD }}' registry.cn-hangzhou.aliyuncs.com
 
       - name: Build & Push Normal Image (Default)
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           platforms: linux/amd64,linux/arm64
           build-args: |
