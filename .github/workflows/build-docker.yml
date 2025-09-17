@@ -1,9 +1,16 @@
 name: Build Docker
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      CLASH_VERSION:
+        description: 'clash version'
+        type: environment
+        required: true
+      DEVICE_PLATFORM:
+        description: 'device paltform'
+        type: environment
+        required: true
 
 jobs:
 
