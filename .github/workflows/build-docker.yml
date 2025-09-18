@@ -4,13 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       CLASH_VERSION:
-        description: 'clash version'
-        type: environment
-        required: true
-      DEVICE_PLATFORM:
-        description: 'device paltform'
-        type: environment
-        required: true
+        description: 'clash version (optional) - if omitted the latest release will be used'
+        type: string
+        required: false
+  schedule:
+    - cron: '0 0 * * 1'
 
 jobs:
 
@@ -19,13 +17,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    environment: build_environment
-    env:
-      CLASH_VERSION: ${{ vars.CLASH_VERSION }}
-      DEVICE_PLATFORM: ${{ vars.DEVICE_PLATFORM }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
+
+      - name: Login To Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login To Alibaba Cloud Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.cn-hangzhou.aliyuncs.com
+          username: ${{ vars.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWD }}
 
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v3
@@ -33,20 +40,36 @@ jobs:
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login To Alibaba Cloud Container Registry
+      - name: Determine CLASH_VERSION
+        id: determine_version
         run: |
-          docker login -u ${{ secrets.ALIYUN_USERNAME }} -p '${{ secrets.ALIYUN_PASSWD }}' registry.cn-hangzhou.aliyuncs.com
+          # Ensure jq is available (ubuntu runner uses apt)
+          if ! command -v jq >/dev/null 2>&1; then sudo apt-get update && sudo apt-get install -y jq; fi
+          # Manual dispatch with CLASH_VERSION specified uses the provided value
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.CLASH_VERSION }}" ]; then
+            echo "version=${{ github.event.inputs.CLASH_VERSION }}" >> $GITHUB_OUTPUT
+            echo "device=linux-amd64" >> $GITHUB_OUTPUT
+          else
+            # Scheduled run or manual without CLASH_VERSION: fetch latest release tag via GitHub API using token
+            tag=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)
+            echo "version=$tag" >> $GITHUB_OUTPUT
+            echo "device=linux-arm64" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Build & Push Normal Image (Default)
-        uses: docker/build-push-action@v3
+      - name: Build & Push Image
+        uses: docker/build-push-action@v6
+        env:
+          CLASH_VERSION: ${{ steps.determine_version.outputs.version }}
         with:
           platforms: linux/amd64,linux/arm64
           build-args: |
-            CLASH_VERSION=${{ env.CLASH_VERSION }}
-            DEVICE_PLATFORM=${{ env.DEVICE_PLATFORM }}
+            CLASH_VERSION=${{ steps.determine_version.outputs.version }}
           file: Dockerfile
           context: .
           push: true
           tags: |
-            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ env.DEVICE_PLATFORM }}-${{ env.CLASH_VERSION }}
+            toringzhang/clash:latest
+            toringzhang/clash:${{ steps.determine_version.outputs.device }}-${{ steps.determine_version.outputs.version }}
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:latest
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ steps.determine_version.outputs.device }}-${{ steps.determine_version.outputs.version }}
 
