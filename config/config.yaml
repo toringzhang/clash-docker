@@ -7,7 +7,7 @@ port: 7890
 socks-port: 7891
 
 # Linux 和 macOS 的 redir 代理端口
-# redir-port: 7892
+redir-port: 7892
 
 # TProxy 代理端口 (仅适用于 Linux, 需要内核支持)
 tproxy-port: 7893
@@ -40,7 +40,7 @@ secret: ''
 # 参数应填写配置目录的相对路径或绝对路径。
 external-ui: /clash-dashboard/
 
-interface-name: eth0
+# interface-name: eth0
 
 # tun 配置
 tun:
@@ -51,9 +51,8 @@ tun:
     - tcp://8.8.8.8:53
     - any:53
     - tcp://any:53
-  include-interface:
-    - eth0
   auto-route: true
+  auto-redir: true
   auto-detect-interface: true
 
 # geo配置
