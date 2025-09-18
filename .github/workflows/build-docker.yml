@@ -48,12 +48,10 @@ jobs:
           # Manual dispatch with CLASH_VERSION specified uses the provided value
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.CLASH_VERSION }}" ]; then
             echo "version=${{ github.event.inputs.CLASH_VERSION }}" >> $GITHUB_OUTPUT
-            echo "device=linux-amd64" >> $GITHUB_OUTPUT
           else
             # Scheduled run or manual without CLASH_VERSION: fetch latest release tag via GitHub API using token
             tag=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)
             echo "version=$tag" >> $GITHUB_OUTPUT
-            echo "device=linux-arm64" >> $GITHUB_OUTPUT
           fi
 
       - name: Build & Push Image
@@ -69,7 +67,7 @@ jobs:
           push: true
           tags: |
             toringzhang/clash:latest
-            toringzhang/clash:${{ steps.determine_version.outputs.device }}-${{ steps.determine_version.outputs.version }}
+            toringzhang/clash:${{ steps.determine_version.outputs.version }}
             registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:latest
-            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ steps.determine_version.outputs.device }}-${{ steps.determine_version.outputs.version }}
+            registry.cn-hangzhou.aliyuncs.com/${{ secrets.ALIYUN_NAMESPACES }}/clash:${{ steps.determine_version.outputs.version }}
 

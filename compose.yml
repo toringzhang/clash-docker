@@ -1,0 +1,12 @@
+services:
+  clash:
+    image: toringzhang/clash:latest
+    container_name: clash
+    hostname: clash
+    privileged: true
+    devices:
+      - /dev/net/tun
+    volumes:
+      - ./config/config.yaml:/root/.config/mihomo/config.yaml
+    restart: unless-stopped
+    network_mode: host
