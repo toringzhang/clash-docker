@@ -41,3 +41,8 @@ docker compose up -d
 3. 修改 *网关* 和 *DNS* 为clash所在设备地址。
 
    ![img](image/image.png)
+
+4. dashboard界面，打开<http://192.168.1.2:9090/ui/>，地址替换为clash的ip地址。
+   ![img](image/image1.png)
+   显示如下
+   ![img](image/image2.png)
