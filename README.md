@@ -25,24 +25,11 @@ docker compose up -d
       path: ./proxy_providers/provider1.yaml
    ```
 
-2. 如果你的设备网卡名称不是`eth0`，则需要修改网卡名称。
-
-   ```yaml
-   # 网卡名称
-   interface-name: eth0
-
-   # tun 配置
-   tun:
-     enable: true
-     include-interface:
-       - eth0
-   ```
-
-3. 修改 *网关* 和 *DNS* 为clash所在设备地址。
+2. 修改 *网关* 和 *DNS* 为clash所在设备地址。
 
    ![img](image/image.png)
 
-4. dashboard界面，打开<http://192.168.1.2:9090/ui/>，地址替换为clash的ip地址。
+3. dashboard界面，打开<http://192.168.1.2:9090/ui/>，地址替换为clash的ip地址。
    ![img](image/image1.png)
    显示如下
    ![img](image/image2.png)
