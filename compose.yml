@@ -3,10 +3,17 @@ services:
     image: toringzhang/clash:latest
     container_name: clash
     hostname: clash
-    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     devices:
       - /dev/net/tun
     volumes:
       - ./config/config.yaml:/root/.config/mihomo/config.yaml
     restart: unless-stopped
     network_mode: host
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
