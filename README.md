@@ -25,11 +25,20 @@ docker compose up -d
       path: ./proxy_providers/provider1.yaml
    ```
 
-2. 修改 *网关* 和 *DNS* 为clash所在设备地址。
+2. 需添加两条ipatables规则让流量可以转发
+   ```bash
+   # 允许从物理网卡进入，并转发到 utun0 的流量
+   sudo iptables -I FORWARD -i eth0 -o utun0 -j ACCEPT
+
+   # 允许从 utun0 发出，并转发到物理网卡的流量
+   sudo iptables -I FORWARD -i utun0 -o eth0 -j ACCEPT
+   ``` 
+
+3. 修改 *网关* 和 *DNS* 为clash所在设备地址。
 
    ![img](image/image.png)
 
-3. dashboard界面，打开<http://192.168.1.2:9090/ui/>，地址替换为clash的ip地址。
+4. dashboard界面，打开<http://192.168.1.2:9090/ui/>，地址替换为clash的ip地址。
    ![img](image/image1.png)
    显示如下
    ![img](image/image2.png)
