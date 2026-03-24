@@ -46,13 +46,12 @@ external-ui: /clash-dashboard/
 tun:
   enable: true
   stack: system
+  device: utun0
   dns-hijack:
-    - 8.8.8.8:53
-    - tcp://8.8.8.8:53
     - any:53
     - tcp://any:53
-  auto-route: true
   auto-redir: true
+  auto-route: true
   auto-detect-interface: true
 
 # geo配置
@@ -68,26 +67,22 @@ geox-url:
 #################### DNS ####################
 dns:
   enable: true # 关闭将使用系统 DNS
-  listen: 0.0.0.0:53
+  listen: 0.0.0.0:1053
   ipv6: true # 当为 false 时, AAAA 查询的响应将为空
   enhanced-mode: fake-ip
+  device: utun0
   default-nameserver:
-    - 223.5.5.5
+    - 223.6.6.6
     - 119.29.29.29
   fake-ip-range: 198.18.0.1/16
   use-hosts: true
-  nameserver-policy:
-    'geosite:cn,private':
-      - "https://223.5.5.5/dns-query"
-      - "https://120.53.53.53/dns-query"
+  nameserver-policy: {}
   nameserver:
-    - https://doh.pub/dns-query # 默认值
+    - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
     - https://1.1.1.1/dns-query
   fallback:
-    - 'https://dns.cloudflare.com/dns-query'
-    - 'https://dns.twnic.tw/dns-query'
-    - 'tls://8.8.4.4:853'
+    - 'tls://8.8.4.4'
     - 'tls://1.1.1.1'
   #如需过代理查询，应配置 proxy-server-nameserver, 以防出现鸡蛋问题
   proxy-server-nameserver:
@@ -96,6 +91,8 @@ dns:
   fallback-filter:
     geoip: true
     geoip-code: CN
+    geosite:
+      - gfw
     ipcidr:
     - 0.0.0.0/8
     - 10.0.0.0/8
@@ -232,7 +229,7 @@ dns:
     - "+.n0808.com"
     - services.googleapis.cn
 
-global-client-fingerprint: chrome # 全局客户端指纹
+client-fingerprint: chrome # 全局客户端指纹
 global-ua: "Mozilla/5.0; AppleWebKit/537.36; Chrome/91.0.4472.114; Safari/537.36; Shadowrocket/1.9.7; meta/1.0.0; Sing/1.1.0" # 全局 UA ,默认clash.meta
 
 #################### 缓存 ####################
