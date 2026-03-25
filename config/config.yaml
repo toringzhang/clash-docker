@@ -70,7 +70,6 @@ dns:
   listen: 0.0.0.0:1053
   ipv6: true # 当为 false 时, AAAA 查询的响应将为空
   enhanced-mode: fake-ip
-  device: utun0
   default-nameserver:
     - 223.6.6.6
     - 119.29.29.29
